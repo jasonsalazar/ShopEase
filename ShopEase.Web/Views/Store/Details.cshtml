@@ -1,0 +1,121 @@
+@model ShopEase.Application.Features.Products.ProductDetailsDto
+
+@{
+    ViewData["Title"] = Model.Name;
+    var inStock = Model.StockQuantity > 0;
+}
+
+<div class="container py-4 py-lg-5">
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+                <a asp-controller="Home" asp-action="Index">
+                    Home
+                </a>
+            </li>
+            <li class="breadcrumb-item">
+                <a asp-controller="Store" asp-action="Index">
+                    Shop
+                </a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">
+                @Model.Name
+            </li>
+        </ol>
+    </nav>
+
+    <div class="row g-4 g-lg-5">
+        <div class="col-md-6">
+            <div class="product-details-image-wrapper">
+                @if (!string.IsNullOrWhiteSpace(Model.ImageUrl))
+                {
+                    <img src="@Model.ImageUrl" alt="@Model.Name" class="product-details-image" />
+                }
+                else
+                {
+                    <div class="product-details-image-placeholder">
+                        <span>📦</span>
+                        <p class="text-secondary mb-0">
+                            No product image available
+                        </p>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <p class="text-secondary text-uppercase small fw-semibold mb-2">
+                @Model.CategoryName
+            </p>
+
+            <h1 class="display-6 fw-bold mb-3">
+                @Model.Name
+            </h1>
+
+            <p class="display-6 fw-bold mb-3">
+                @Model.Price.ToString("C")
+            </p>
+
+            @if (inStock)
+            {
+                <span class="badge text-bg-success mb-3">
+                    In stock
+                </span>
+            }
+            else
+            {
+                <span class="badge text-bg-danger mb-3">
+                    Out of stock
+                </span>
+            }
+
+            <hr />
+
+            <h2 class="h5 fw-bold">Product Description</h2>
+
+            @if (!string.IsNullOrWhiteSpace(Model.Description))
+            {
+                <p class="text-secondary product-description">
+                    @Model.Description
+                </p>
+            }
+            else
+            {
+                <p class="text-secondary">
+                    No description is available for this product.
+                </p>
+            }
+
+            @if (inStock)
+            {
+                <div class="mt-4">
+                    <label for="quantity" class="form-label fw-semibold">
+                        Quantity
+                    </label>
+
+                    <input type="number" id="quantity" class="form-control quantity-input" value="1" min="1"
+                           max="@Model.StockQuantity" />
+
+                    <p class="small text-secondary mt-2">
+                        @Model.StockQuantity item(s) available
+                    </p>
+
+                    <button type="button" class="btn btn-dark btn-lg w-100" disabled
+                            title="Shopping cart will be implemented in the next step">
+                        Add to Cart — Coming Soon
+                    </button>
+                </div>
+            }
+            else
+            {
+                <button type="button" class="btn btn-secondary btn-lg w-100 mt-4" disabled>
+                    Currently Unavailable
+                </button>
+            }
+
+            <a asp-controller="Store" asp-action="Index" class="btn btn-outline-dark w-100 mt-3">
+                <icon name="arrow-left" size="sm" /> Continue Shopping
+            </a>
+        </div>
+    </div>
+</div>

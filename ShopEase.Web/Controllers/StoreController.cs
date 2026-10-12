@@ -39,4 +39,26 @@ public class StoreController(
 
         return View(viewModel);
     }
+
+    public async Task<IActionResult> Details(
+        int id,
+        CancellationToken cancellationToken)
+    {
+        if (id <= 0)
+        {
+            return NotFound();
+        }
+
+        var product = await _productService.GetByIdAsync(
+            id,
+            cancellationToken);
+
+        if (product is null)
+        {
+            return NotFound();
+        }
+
+        return View(product);
+    }
+
 }
