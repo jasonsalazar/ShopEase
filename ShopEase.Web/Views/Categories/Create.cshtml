@@ -1,0 +1,22 @@
+@model ShopEase.Application.Features.Categories.CategoryEditDto
+
+@{
+    ViewData["Title"] = "Create Category";
+}
+
+<div class="container py-4">
+    <div class="card shadow-sm mx-auto" style="max-width: 650px">
+        <div class="card-body p-4">
+            <h1 class="h4 mb-4">Create Category</h1>
+            <form asp-action="Create" method="post">
+                <partial name="_CategoryForm" model="Model" />
+                <button class="btn btn-primary" type="submit">Save</button>
+                <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

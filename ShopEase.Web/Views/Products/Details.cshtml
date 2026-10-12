@@ -1,0 +1,25 @@
+@model ShopEase.Application.Features.Products.ProductDetailsDto
+
+@{
+    ViewData["Title"] = Model.Name;
+}
+
+<div class="container py-4">
+    <a asp-action="Index" class="text-decoration-none">
+        &larr; Back to products
+    </a>
+
+    <div class="card shadow-sm mt-3">
+        <div class="card-body p-4">
+            <h1 class="h3">@Model.Name</h1>
+            <p class="text-muted">Category: @Model.CategoryName</p>
+            <h2 class="text-primary my-3">@Model.Price.ToString("C")</h2>
+            <p>@Model.Description</p>
+            <p>Available stock: @Model.StockQuantity</p>
+            <p class="text-muted small">
+                Created: @Model.CreatedAt.ToLocalTime().ToString("g")
+            </p>
+            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Edit Product</a>
+        </div>
+    </div>
+</div>
