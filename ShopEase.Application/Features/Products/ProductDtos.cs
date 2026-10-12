@@ -51,9 +51,10 @@ public sealed class ProductEditDto
 public sealed class ProductPageDto
 {
     public IReadOnlyList<ProductListItemDto> Items { get; init; }
-        = Array.Empty<ProductListItemDto>();
+        = [];
 
     public string? Search { get; init; }
+    public int? CategoryId { get; init; }
     public int Page { get; init; }
     public int PageSize { get; init; }
     public int TotalCount { get; init; }

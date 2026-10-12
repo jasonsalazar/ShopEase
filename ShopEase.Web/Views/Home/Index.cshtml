@@ -20,7 +20,7 @@
                 at prices you'll love.
             </p>
 
-            <a asp-controller="Products" asp-action="Index" class="btn btn-dark btn-lg mt-2">
+            <a asp-controller="Store" asp-action="Index" class="btn btn-dark btn-lg mt-2">
                 Shop Now
             </a>
         </div>
@@ -56,7 +56,7 @@
             @foreach (var category in Model.Categories)
             {
                 <div class="col-6 col-md-4 col-lg-3">
-                    <a asp-controller="Products" asp-action="Index" asp-route-categoryId="@category.Id"
+                    <a asp-controller="Store" asp-action="Index" asp-route-categoryId="@category.Id"
                        class="category-card card h-100 text-decoration-none">
                         <div class="card-body">
                             <div class="category-icon mb-3">📦</div>
@@ -84,7 +84,7 @@
             </p>
         </div>
 
-        <a asp-controller="Products" asp-action="Index" class="btn btn-outline-dark">
+        <a asp-controller="Store" asp-action="Index" class="btn btn-outline-dark">
             View All
         </a>
     </div>

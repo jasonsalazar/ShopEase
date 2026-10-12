@@ -10,8 +10,9 @@ public sealed class ProductService(IShopEaseDbContext db)
 
     public async Task<ProductPageDto> GetPageAsync(
         string? search,
+        int? categoryId,
         int page,
-        int pageSize = 10,
+        int pageSize = 12,
         CancellationToken cancellationToken = default)
     {
         page = Math.Max(1, page);
@@ -26,6 +27,11 @@ public sealed class ProductService(IShopEaseDbContext db)
         if (!string.IsNullOrWhiteSpace(search))
         {
             query = query.Where(p => p.Name.Contains(search));
+        }
+
+        if (categoryId.HasValue && categoryId.Value > 0)
+        {
+            query = query.Where(p => p.CategoryId == categoryId.Value);
         }
 
         var totalCount = await query.CountAsync(cancellationToken);
@@ -50,6 +56,7 @@ public sealed class ProductService(IShopEaseDbContext db)
         {
             Items = items,
             Search = search,
+            CategoryId = categoryId,
             Page = page,
             PageSize = pageSize,
             TotalCount = totalCount

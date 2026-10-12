@@ -1,0 +1,180 @@
+@model ShopEase.Web.ViewModels.StoreCatalogViewModel
+
+@{
+    ViewData["Title"] = "Shop";
+
+    var products = Model.Products;
+    var hasFilters = !string.IsNullOrWhiteSpace(products.Search)
+                     || products.CategoryId.HasValue;
+}
+
+<div class="container py-4">
+    <div class="mb-4">
+        <h1 class="display-6 fw-bold">Shop All Products</h1>
+        <p class="text-secondary">
+            Find your next favorite item at ShopEase.
+        </p>
+    </div>
+
+    <form asp-controller="Store" asp-action="Index" method="get" class="card card-body mb-4">
+        <div class="row g-3 align-items-end">
+            <div class="col-md-6">
+                <label for="search" class="form-label">
+                    Search products
+                </label>
+                <input id="search" name="search" value="@products.Search" class="form-control"
+                       placeholder="Search by product name..." />
+            </div>
+
+            <div class="col-md-4">
+                <label for="categoryId" class="form-label">
+                    Category
+                </label>
+                <select id="categoryId" name="categoryId" class="form-select">
+                    <option value="">All categories</option>
+                    @foreach (var category in Model.Categories)
+                    {
+                        if (products.CategoryId == category.Id)
+                        {
+                            <option value="@category.Id" selected>
+                                @category.Name
+                            </option>
+                        }
+                        else
+                        {
+                            <option value="@category.Id">
+                                @category.Name
+                            </option>
+                        }
+                    }
+                </select>
+            </div>
+
+            <div class="col-md-2 d-grid">
+                <button type="submit" class="btn btn-dark">
+                    <icon name="search" size="sm" /> Search
+                </button>
+            </div>
+        </div>
+
+        @if (hasFilters)
+        {
+            <div class="mt-3">
+                <a asp-controller="Store" asp-action="Index" class="small text-decoration-none">
+                    Clear filters
+                </a>
+            </div>
+        }
+    </form>
+
+    <div class="d-flex justify-content-between
+        align-items-center mb-3">
+        <p class="text-secondary mb-0">
+            @products.TotalCount product(s) found
+        </p>
+        <span class="small text-secondary">
+            Page @products.Page of @Math.Max(1, products.TotalPages)
+        </span>
+    </div>
+
+    @if (products.Items.Count == 0)
+    {
+        <div class="text-center border rounded-4 p-5">
+            <div class="display-4 mb-3">🔎</div>
+            <h2 class="h4">No products found</h2>
+            <p class="text-secondary">
+                Try another search term or category.
+            </p>
+            <a asp-controller="Store" asp-action="Index" class="btn btn-outline-dark">
+                View all products
+            </a>
+        </div>
+    }
+    else
+    {
+        <div class="row g-4">
+            @foreach (var product in products.Items)
+            {
+                <div class="col-6 col-md-4 col-lg-3">
+                    <div class="card product-card h-100">
+                        @if (!string.IsNullOrWhiteSpace(product.ImageUrl))
+                        {
+                            <img src="@product.ImageUrl" alt="@product.Name" class="card-img-top product-image" loading="lazy" />
+                        }
+                        else
+                        {
+                            <div class="product-image-placeholder">
+                                📦
+                            </div>
+                        }
+
+                        <div class="card-body d-flex flex-column">
+                            <p class="small text-secondary mb-1">
+                                @product.CategoryName
+                            </p>
+
+                            <h2 class="h6 fw-bold">
+                                @product.Name
+                            </h2>
+
+                            <p class="fs-5 fw-bold mb-2">
+                                @product.Price.ToString("C")
+                            </p>
+
+                            @if (product.StockQuantity > 0)
+                            {
+                                <span class="small text-success mb-3">
+                                    In stock
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="small text-danger mb-3">
+                                    Out of stock
+                                </span>
+                            }
+
+                            <a asp-controller="Products" asp-action="Details" asp-route-id="@product.Id"
+                               class="btn btn-outline-dark mt-auto">
+                                View Details
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        @if (products.TotalPages > 1)
+        {
+            <nav class="mt-4" aria-label="Product pages">
+                <ul class="pagination justify-content-center flex-wrap">
+                    <li class="page-item @(products.Page <= 1 ? "disabled" : "")">
+                        <a class="page-link" asp-controller="Store" asp-action="Index" asp-route-search="@products.Search"
+                           asp-route-categoryId="@products.CategoryId" asp-route-page="@(products.Page - 1)">
+                            Previous
+                        </a>
+                    </li>
+
+                    @for (var pageNumber = 1;
+                          pageNumber <= products.TotalPages;
+                          pageNumber++)
+                    {
+                        <li class="page-item @(pageNumber == products.Page ? "active" : "")">
+                            <a class="page-link" asp-controller="Store" asp-action="Index" asp-route-search="@products.Search"
+                               asp-route-categoryId="@products.CategoryId" asp-route-page="@pageNumber">
+                                @pageNumber
+                            </a>
+                        </li>
+                    }
+
+                    <li class="page-item @(products.Page >= products.TotalPages ? "disabled" : "")">
+                        <a class="page-link" asp-controller="Store" asp-action="Index" asp-route-search="@products.Search"
+                           asp-route-categoryId="@products.CategoryId" asp-route-page="@(products.Page + 1)">
+                            Next
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        }
+    }
+</div>

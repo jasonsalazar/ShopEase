@@ -21,11 +21,17 @@ public class ProductsController : Controller
 
     public async Task<IActionResult> Index(
         string? search,
+        int? categoryId,
         int page = 1,
+        int pageSize = 10,
         CancellationToken cancellationToken = default)
     {
         var result = await _products.GetPageAsync(
-            search, page, cancellationToken: cancellationToken);
+            search,
+            categoryId,
+            page,
+            pageSize,
+            cancellationToken);
 
         return View(result);
     }

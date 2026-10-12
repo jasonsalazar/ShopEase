@@ -17,6 +17,7 @@ public class HomeController(
     {
         var products = await _productService.GetPageAsync(
             search: null,
+            categoryId: null,
             page: 1,
             pageSize: 8,
             cancellationToken: cancellationToken);
