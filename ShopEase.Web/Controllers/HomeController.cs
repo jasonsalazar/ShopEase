@@ -1,24 +1,35 @@
-using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
-using ShopEase.Web.Models;
+using ShopEase.Application.Features.Categories;
+using ShopEase.Application.Features.Products;
+using ShopEase.Web.ViewModels;
 
 namespace ShopEase.Web.Controllers;
 
-public class HomeController : Controller
+public class HomeController(
+    ProductService productService,
+    CategoryService categoryService) : Controller
 {
-    public IActionResult Index()
-    {
-        return View();
-    }
+    private readonly ProductService _productService = productService;
+    private readonly CategoryService _categoryService = categoryService;
 
-    public IActionResult Privacy()
+    public async Task<IActionResult> Index(
+        CancellationToken cancellationToken)
     {
-        return View();
-    }
+        var products = await _productService.GetPageAsync(
+            search: null,
+            page: 1,
+            pageSize: 8,
+            cancellationToken: cancellationToken);
 
-    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-    public IActionResult Error()
-    {
-        return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        var categories = await _categoryService.GetAllAsync(
+            cancellationToken);
+
+        var viewModel = new StoreHomeViewModel
+        {
+            FeaturedProducts = products.Items,
+            Categories = categories
+        };
+
+        return View(viewModel);
     }
 }

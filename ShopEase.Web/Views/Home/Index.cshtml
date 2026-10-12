@@ -1,8 +1,153 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@model ShopEase.Web.ViewModels.StoreHomeViewModel
+
+@{
+    ViewData["Title"] = "Home";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+<section class="store-hero rounded-4 p-4 p-md-5 mb-5">
+    <div class="row align-items-center">
+        <div class="col-lg-7">
+            <span class="badge text-bg-light mb-3">
+                Welcome to ShopEase
+            </span>
+
+            <h1 class="display-5 fw-bold">
+                Find something you'll love.
+            </h1>
+
+            <p class="lead text-secondary mt-3">
+                Discover products for your everyday needs
+                at prices you'll love.
+            </p>
+
+            <a asp-controller="Products" asp-action="Index" class="btn btn-dark btn-lg mt-2">
+                Shop Now
+            </a>
+        </div>
+
+        <div class="col-lg-5 text-center mt-4 mt-lg-0">
+            <div class="hero-icon">
+                <span>🛍️</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="mb-5">
+    <div class="d-flex justify-content-between
+        align-items-center mb-3">
+        <div>
+            <h2 class="h3 fw-bold mb-1">Shop by Category</h2>
+            <p class="text-secondary mb-0">
+                Explore our product categories.
+            </p>
+        </div>
+    </div>
+
+    @if (Model.Categories.Count == 0)
+    {
+        <div class="alert alert-light border">
+            No categories are available yet.
+        </div>
+    }
+    else
+    {
+        <div class="row g-3">
+            @foreach (var category in Model.Categories)
+            {
+                <div class="col-6 col-md-4 col-lg-3">
+                    <a asp-controller="Products" asp-action="Index" asp-route-categoryId="@category.Id"
+                       class="category-card card h-100 text-decoration-none">
+                        <div class="card-body">
+                            <div class="category-icon mb-3">📦</div>
+                            <h3 class="h6 fw-bold text-dark">
+                                @category.Name
+                            </h3>
+                            <p class="small text-secondary mb-0">
+                                @category.ProductCount products
+                            </p>
+                        </div>
+                    </a>
+                </div>
+            }
+        </div>
+    }
+</section>
+
+<section class="mb-5">
+    <div class="d-flex justify-content-between
+        align-items-center mb-3">
+        <div>
+            <h2 class="h3 fw-bold mb-1">Featured Products</h2>
+            <p class="text-secondary mb-0">
+                Take a look at what we have to offer.
+            </p>
+        </div>
+
+        <a asp-controller="Products" asp-action="Index" class="btn btn-outline-dark">
+            View All
+        </a>
+    </div>
+
+    @if (Model.FeaturedProducts.Count == 0)
+    {
+        <div class="alert alert-light border">
+            No products are available yet.
+            Add products from the management pages to see them here.
+        </div>
+    }
+    else
+    {
+        <div class="row g-4">
+            @foreach (var product in Model.FeaturedProducts)
+            {
+                <div class="col-6 col-md-4 col-lg-3">
+                    <div class="card product-card h-100">
+                        @if (!string.IsNullOrWhiteSpace(product.ImageUrl))
+                        {
+                            <img src="@product.ImageUrl" class="card-img-top product-image" alt="@product.Name" loading="lazy" />
+                        }
+                        else
+                        {
+                            <div class="product-image-placeholder">
+                                <span>📦</span>
+                            </div>
+                        }
+
+                        <div class="card-body d-flex flex-column">
+                            <p class="small text-secondary mb-1">
+                                @product.CategoryName
+                            </p>
+
+                            <h3 class="h6 fw-bold">
+                                @product.Name
+                            </h3>
+
+                            <p class="fw-bold fs-5 mb-2">
+                                @product.Price.ToString("C")
+                            </p>
+
+                            @if (product.StockQuantity > 0)
+                            {
+                                <span class="small text-success mb-3">
+                                    In stock
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="small text-danger mb-3">
+                                    Out of stock
+                                </span>
+                            }
+
+                            <a asp-controller="Products" asp-action="Details" asp-route-id="@product.Id"
+                               class="btn btn-outline-dark mt-auto">
+                                View Details
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</section>
