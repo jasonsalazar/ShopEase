@@ -1,0 +1,20 @@
+@{
+    ViewData["Title"] = "Shopping Cart";
+}
+
+<div class="container py-5">
+    <div class="text-center py-5">
+        <div class="display-3 mb-3">🛒</div>
+
+        <h1 class="h2 fw-bold">Your Shopping Cart</h1>
+
+        <p class="text-secondary mt-3">
+            Your cart is not available yet.
+            Browse our products while we prepare your shopping experience.
+        </p>
+
+        <a asp-controller="Store" asp-action="Index" class="btn btn-dark mt-3">
+            Start Shopping
+        </a>
+    </div>
+</div>

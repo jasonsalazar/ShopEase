@@ -61,4 +61,8 @@ public class StoreController(
         return View(product);
     }
 
+    public IActionResult Cart()
+    {
+        return View();
+    }
 }

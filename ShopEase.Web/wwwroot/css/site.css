@@ -116,3 +116,51 @@
     min-height: 240px;
   }
 }
+
+/* Shared customer storefront layout */
+
+.navbar {
+  z-index: 1020;
+}
+
+.navbar-brand {
+  letter-spacing: -0.5px;
+}
+
+.navbar .nav-link {
+  font-weight: 500;
+  color: #495057;
+}
+
+.navbar .nav-link:hover,
+.navbar .nav-link.active {
+  color: #0d6efd;
+}
+
+.navbar form[role="search"] {
+  max-width: 380px;
+}
+
+.store-footer {
+  background-color: #fff;
+}
+
+.store-footer-link {
+  color: #6c757d;
+  text-decoration: none;
+}
+
+.store-footer-link:hover {
+  color: #0d6efd;
+  text-decoration: underline;
+}
+
+@media (max-width: 991.98px) {
+  .navbar form[role="search"] {
+    max-width: none;
+  }
+
+  .navbar .btn-dark {
+    width: 100%;
+  }
+}
