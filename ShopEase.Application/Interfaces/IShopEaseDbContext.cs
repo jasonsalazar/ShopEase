@@ -9,6 +9,10 @@ public interface IShopEaseDbContext
 
     DbSet<Category> Categories { get; }
 
+    DbSet<ShoppingCart> ShoppingCarts { get; }
+
+    DbSet<ShoppingCartItem> ShoppingCartItems { get; }
+
     Task<int> SaveChangesAsync(
         CancellationToken cancellationToken = default);
 }

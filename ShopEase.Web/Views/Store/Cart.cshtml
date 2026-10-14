@@ -1,20 +1,153 @@
+@model ShopEase.Application.DTOs.ShoppingCartDto
+
 @{
     ViewData["Title"] = "Shopping Cart";
 }
 
 <div class="container py-5">
-    <div class="text-center py-5">
-        <div class="display-3 mb-3">🛒</div>
-
-        <h1 class="h2 fw-bold">Your Shopping Cart</h1>
-
-        <p class="text-secondary mt-3">
-            Your cart is not available yet.
-            Browse our products while we prepare your shopping experience.
-        </p>
-
-        <a asp-controller="Store" asp-action="Index" class="btn btn-dark mt-3">
-            Start Shopping
-        </a>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h2 fw-bold mb-1">Your Shopping Cart</h1>
+            <p class="text-secondary mb-0">Review your items before checkout.</p>
+        </div>
+        <a asp-controller="Store" asp-action="Index" class="btn btn-outline-dark">Continue Shopping</a>
     </div>
+
+    @if (TempData["CartSuccess"] is string successMessage)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @successMessage
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    @if (TempData["CartError"] is string errorMessage)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            @errorMessage
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    @if (Model.Items.Count == 0)
+    {
+        <div class="text-center border rounded-4 p-5">
+            <div class="display-3 mb-3">🛒</div>
+            <h2 class="h4 fw-bold">Your cart is empty</h2>
+            <p class="text-secondary">Browse our products and find something you love.</p>
+            <a asp-controller="Store" asp-action="Index" class="btn btn-dark mt-2">Start Shopping</a>
+        </div>
+    }
+    else
+    {
+        @if (Model.HasStockIssues)
+        {
+            <div class="alert alert-warning">
+                Some items exceed current stock. Update their quantities before checkout.
+            </div>
+        }
+
+        <div class="row g-4">
+            <div class="col-lg-8">
+                @foreach (var item in Model.Items)
+                {
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <div class="row g-3 align-items-center">
+                                <div class="col-4 col-md-3">
+                                    @if (!string.IsNullOrWhiteSpace(item.ImageUrl))
+                                    {
+                                        <img src="@item.ImageUrl" alt="@item.Name" class="cart-product-image" />
+                                    }
+                                    else
+                                    {
+                                        <div class="cart-product-placeholder">📦</div>
+                                    }
+                                </div>
+
+                                <div class="col-8 col-md-9">
+                                    <div class="d-flex flex-column flex-md-row
+                                        justify-content-between gap-3">
+                                        <div>
+                                            <h2 class="h6 fw-bold">@item.Name</h2>
+                                            <p class="small text-secondary">@item.CategoryName</p>
+                                            <p class="fw-semibold">@item.UnitPrice.ToString("C")</p>
+
+                                            @if (!item.IsStockAvailable)
+                                            {
+                                                <div class="alert alert-warning py-2 mt-2 mb-0">
+                                                    Only @item.StockQuantity item(s) currently available.
+                                                    Please update the quantity before checkout.
+                                                </div>
+                                            }
+
+                                            <form asp-controller="Store" asp-action="UpdateCart" method="post"
+                                                  class="d-flex align-items-end flex-wrap gap-2">
+                                                <input type="hidden" name="productId" value="@item.ProductId" />
+
+                                                <div>
+                                                    <label class="form-label small" for="quantity-@item.ProductId">
+                                                        Quantity
+                                                    </label>
+                                                    <input type="number" id="quantity-@item.ProductId" name="quantity"
+                                                           value="@item.Quantity" min="0" class="form-control cart-quantity"
+                                                           required />
+                                                </div>
+
+                                                <button type="submit" class="btn btn-outline-dark btn-sm">
+                                                    Update
+                                                </button>
+                                            </form>
+
+                                            <form asp-controller="Store" asp-action="RemoveFromCart" method="post" class="mt-2">
+                                                <input type="hidden" name="productId" value="@item.ProductId" />
+                                                <button type="submit" class="btn btn-link text-danger p-0">
+                                                    Remove
+                                                </button>
+                                            </form>
+                                        </div>
+
+                                        <div class="text-md-end">
+                                            <span class="small text-secondary">Subtotal</span>
+                                            <div class="fw-bold">
+                                                @item.Subtotal.ToString("C")
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <div class="col-lg-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h2 class="h5 fw-bold mb-3">Order Summary</h2>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Items</span>
+                            <span>@Model.ItemCount</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-3">
+                            <span>Subtotal</span>
+                            <span>@Model.Total.ToString("C")</span>
+                        </div>
+                        <hr />
+                        <div class="d-flex justify-content-between mb-3">
+                            <span class="fw-bold">Total</span>
+                            <span class="fs-5 fw-bold">@Model.Total.ToString("C")</span>
+                        </div>
+
+                        <button type="button" class="btn btn-dark w-100" disabled>
+                            Checkout — Coming Soon
+                        </button>
+                        <p class="small text-secondary mt-3 mb-0">
+                            Stock and order totals will be verified during checkout.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
 </div>

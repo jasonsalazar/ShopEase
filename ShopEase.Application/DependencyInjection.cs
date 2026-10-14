@@ -1,6 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using ShopEase.Application.Features.Categories;
 using ShopEase.Application.Features.Products;
+using ShopEase.Application.Services;
 
 namespace ShopEase.Application;
 
@@ -11,6 +12,7 @@ public static class DependencyInjection
     {
         services.AddScoped<ProductService>();
         services.AddScoped<CategoryService>();
+        services.AddScoped<ShoppingCartService>();
 
         return services;
     }

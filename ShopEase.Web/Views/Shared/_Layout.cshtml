@@ -49,9 +49,7 @@
                         </button>
                     </form>
 
-                    <a asp-controller="Store" asp-action="Cart" class="btn btn-dark">
-                        🛒 Cart
-                    </a>
+                    @await Component.InvokeAsync("CartSummary")
                 </div>
             </div>
         </nav>
