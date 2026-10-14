@@ -1,10 +1,8 @@
-
-using System.Text.Json;
 using Microsoft.AspNetCore.Mvc;
+using ShopEase.Application.DTOs;
 using ShopEase.Application.Features.Categories;
 using ShopEase.Application.Features.Products;
 using ShopEase.Application.Services;
-using ShopEase.Web.Models;
 using ShopEase.Web.ViewModels;
 
 namespace ShopEase.Web.Controllers;
@@ -12,11 +10,13 @@ namespace ShopEase.Web.Controllers;
 public class StoreController(
     ProductService productService,
     CategoryService categoryService,
-    ShoppingCartService shoppingCartService) : Controller
+    ShoppingCartService shoppingCartService,
+    CheckoutService checkoutService) : Controller
 {
     private readonly ProductService _productService = productService;
     private readonly CategoryService _categoryService = categoryService;
     private readonly ShoppingCartService _shoppingCartService = shoppingCartService;
+    private readonly CheckoutService _checkoutService = checkoutService;
 
     public async Task<IActionResult> Index(
         string? search,
@@ -164,4 +164,76 @@ public class StoreController(
 
         return RedirectToAction(nameof(Cart));
     }
+
+    [HttpGet]
+    public async Task<IActionResult> Checkout(
+        CancellationToken cancellationToken)
+    {
+        var cartKey = GetCartKey();
+        var cart = await _shoppingCartService.GetAsync(
+            cartKey, cancellationToken);
+
+        if (cart.ItemCount == 0)
+        {
+            TempData["CartError"] =
+                "Your cart is empty. Add a product before checkout.";
+
+            return RedirectToAction(nameof(Cart));
+        }
+
+        if (cart.HasStockIssues)
+        {
+            TempData["CartError"] =
+                "Please correct the quantities in your cart before checkout.";
+
+            return RedirectToAction(nameof(Cart));
+        }
+
+        return View(new CheckoutRequestDto());
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Checkout(
+        CheckoutRequestDto request,
+        CancellationToken cancellationToken)
+    {
+        if (!ModelState.IsValid)
+            return View(request);
+
+        try
+        {
+            var cartKey = GetCartKey();
+
+            var orderNumber = await _checkoutService.PlaceOrderAsync(
+                cartKey, request, cancellationToken);
+
+            return RedirectToAction(
+                nameof(OrderConfirmation),
+                new { orderNumber });
+        }
+        catch (InvalidOperationException ex)
+        {
+            ModelState.AddModelError(string.Empty, ex.Message);
+            return View(request);
+        }
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> OrderConfirmation(
+        string? orderNumber,
+        CancellationToken cancellationToken)
+    {
+        if (string.IsNullOrWhiteSpace(orderNumber))
+            return NotFound();
+
+        var order = await _checkoutService.GetOrderAsync(
+            orderNumber, cancellationToken);
+
+        if (order is null)
+            return NotFound();
+
+        return View(order);
+    }
+
 }

@@ -68,4 +68,9 @@ public class ShoppingCart
         if (item is not null)
             _items.Remove(item);
     }
+
+    public void Clear()
+    {
+        _items.Clear();
+    }
 }

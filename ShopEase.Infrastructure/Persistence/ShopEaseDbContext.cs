@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using ShopEase.Application.Interfaces;
 using ShopEase.Domain.Entities;
 
@@ -15,6 +16,10 @@ public class ShopEaseDbContext(
     public DbSet<ShoppingCart> ShoppingCarts => Set<ShoppingCart>();
 
     public DbSet<ShoppingCartItem> ShoppingCartItems => Set<ShoppingCartItem>();
+
+    public DbSet<Order> Orders => Set<Order>();
+
+    public override DatabaseFacade Database => base.Database;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -101,6 +106,74 @@ public class ShopEaseDbContext(
                 .WithMany()
                 .HasForeignKey(item => item.ProductId)
                 .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        modelBuilder.Entity<Order>(entity =>
+        {
+            entity.HasKey(order => order.Id);
+
+            entity.Property(order => order.OrderNumber)
+                .HasMaxLength(40)
+                .IsRequired();
+
+            entity.HasIndex(order => order.OrderNumber)
+                .IsUnique();
+
+            entity.Property(order => order.CustomerName)
+                .HasMaxLength(100)
+                .IsRequired();
+
+            entity.Property(order => order.Email)
+                .HasMaxLength(254)
+                .IsRequired();
+
+            entity.Property(order => order.Phone)
+                .HasMaxLength(30);
+
+            entity.Property(order => order.ShippingAddress)
+                .HasMaxLength(250)
+                .IsRequired();
+
+            entity.Property(order => order.City)
+                .HasMaxLength(100)
+                .IsRequired();
+
+            entity.Property(order => order.PostalCode)
+                .HasMaxLength(20)
+                .IsRequired();
+
+            entity.Property(order => order.Status)
+                .HasConversion<string>()
+                .HasMaxLength(30)
+                .IsRequired();
+
+            entity.HasMany(order => order.Items)
+                .WithOne()
+                .HasForeignKey(item => item.OrderId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.Navigation(order => order.Items)
+                .HasField("_items")
+                .UsePropertyAccessMode(PropertyAccessMode.Field);
+        });
+
+        modelBuilder.Entity<OrderItem>(entity =>
+        {
+            entity.HasKey(item => item.Id);
+
+            entity.Property(item => item.ProductName)
+                .HasMaxLength(150)
+                .IsRequired();
+
+            entity.Property(item => item.UnitPrice)
+                .HasPrecision(18, 2)
+                .IsRequired();
+
+            entity.Property(item => item.Quantity)
+                .IsRequired();
+
+            // Preserve order history if the catalog product is deleted.
+            // ProductId remains a historical reference, not a live FK.
         });
 
     }

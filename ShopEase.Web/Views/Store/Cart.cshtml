@@ -139,9 +139,19 @@
                             <span class="fs-5 fw-bold">@Model.Total.ToString("C")</span>
                         </div>
 
-                        <button type="button" class="btn btn-dark w-100" disabled>
-                            Checkout — Coming Soon
-                        </button>
+                        @if (Model.Items.Count > 0 && !Model.HasStockIssues)
+                        {
+                            <a asp-controller="Store" asp-action="Checkout" class="btn btn-primary w-100">
+                                Proceed to checkout
+                            </a>
+                        }
+                        else
+                        {
+                            <button type="button" class="btn btn-primary w-100" disabled>
+                                Proceed to checkout
+                            </button>
+                        }
+                        
                         <p class="small text-secondary mt-3 mb-0">
                             Stock and order totals will be verified during checkout.
                         </p>

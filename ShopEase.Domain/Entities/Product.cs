@@ -58,14 +58,11 @@ public class Product
         if (string.IsNullOrWhiteSpace(name))
             throw new ArgumentException("Product name is required.");
 
-        if (price <= 0)
-            throw new ArgumentOutOfRangeException(nameof(price));
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(price);
 
-        if (stockQuantity < 0)
-            throw new ArgumentOutOfRangeException(nameof(stockQuantity));
+        ArgumentOutOfRangeException.ThrowIfNegative(stockQuantity);
 
-        if (categoryId <= 0)
-            throw new ArgumentOutOfRangeException(nameof(categoryId));
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(categoryId);
 
         Name = name.Trim();
         Description = description;
@@ -74,4 +71,16 @@ public class Product
         ImageUrl = imageUrl;
         CategoryId = categoryId;
     }
+
+    public void ReduceStock(int quantity)
+    {
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(quantity);
+
+        if (quantity > StockQuantity)
+            throw new InvalidOperationException(
+                $"Only {StockQuantity} item(s) are available.");
+
+        StockQuantity -= quantity;
+    }
+
 }
