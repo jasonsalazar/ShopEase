@@ -13,7 +13,8 @@ public class Order
         string phone,
         string shippingAddress,
         string city,
-        string postalCode)
+        string postalCode,
+        string? customerId = null)
     {
         if (string.IsNullOrWhiteSpace(orderNumber))
             throw new ArgumentException(
@@ -40,6 +41,9 @@ public class Order
                 "Postal code is required.", nameof(postalCode));
 
         OrderNumber = orderNumber;
+        CustomerId = string.IsNullOrWhiteSpace(customerId)
+            ? null
+            : customerId;
         CustomerName = customerName.Trim();
         Email = email.Trim();
         Phone = phone?.Trim() ?? string.Empty;
@@ -52,6 +56,7 @@ public class Order
 
     public int Id { get; private set; }
     public string OrderNumber { get; private set; } = string.Empty;
+    public string? CustomerId { get; private set; }
     public string CustomerName { get; private set; } = string.Empty;
     public string Email { get; private set; } = string.Empty;
     public string Phone { get; private set; } = string.Empty;

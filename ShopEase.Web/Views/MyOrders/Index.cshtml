@@ -1,0 +1,62 @@
+@model IReadOnlyList<ShopEase.Application.DTOs.OrderListItemDto>
+
+@{
+    ViewData["Title"] = "My Orders";
+}
+
+<div class="container py-5">
+    <h1 class="h2 mb-4">My Orders</h1>
+
+    @if (Model.Count == 0)
+    {
+        <div class="text-center py-5">
+            <h2 class="h5">No orders yet</h2>
+            <p class="text-muted">
+                Your completed checkout orders will appear here
+                when you're signed in to your account.
+            </p>
+            <a asp-controller="Store" asp-action="Index" class="btn btn-primary">
+                Browse products
+            </a>
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead>
+                    <tr>
+                        <th>Order</th>
+                        <th>Date</th>
+                        <th>Status</th>
+                        <th class="text-end">Total</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var order in Model)
+                    {
+                        <tr>
+                            <td>@order.OrderNumber</td>
+                            <td>@order.CreatedAt.ToLocalTime().ToString("d")</td>
+                            <td>
+                                <span class="badge bg-secondary">
+                                    @order.Status
+                                </span>
+                            </td>
+                            <td class="text-end">
+                                @order.Total.ToString("C")
+                            </td>
+                            <td class="text-end">
+                                <a asp-action="Details" asp-route-orderNumber="@order.OrderNumber"
+                                   class="btn btn-sm btn-outline-primary">
+                                    View
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>

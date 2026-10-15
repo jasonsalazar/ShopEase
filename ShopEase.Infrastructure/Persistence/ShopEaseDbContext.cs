@@ -1,13 +1,15 @@
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using ShopEase.Application.Interfaces;
 using ShopEase.Domain.Entities;
+using ShopEase.Infrastructure.Identity;
 
 namespace ShopEase.Infrastructure.Persistence;
 
 public class ShopEaseDbContext(
     DbContextOptions<ShopEaseDbContext> options)
-        : DbContext(options), IShopEaseDbContext
+        : IdentityDbContext<ApplicationUser>(options), IShopEaseDbContext
 {
     public DbSet<Product> Products => Set<Product>();
 
@@ -119,6 +121,9 @@ public class ShopEaseDbContext(
             entity.HasIndex(order => order.OrderNumber)
                 .IsUnique();
 
+            entity.Property(order => order.CustomerId)
+                .HasMaxLength(450);
+
             entity.Property(order => order.CustomerName)
                 .HasMaxLength(100)
                 .IsRequired();
@@ -155,6 +160,8 @@ public class ShopEaseDbContext(
             entity.Navigation(order => order.Items)
                 .HasField("_items")
                 .UsePropertyAccessMode(PropertyAccessMode.Field);
+
+            entity.HasIndex(order => order.CustomerId);
         });
 
         modelBuilder.Entity<OrderItem>(entity =>

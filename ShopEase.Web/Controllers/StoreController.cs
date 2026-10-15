@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
 using ShopEase.Application.DTOs;
 using ShopEase.Application.Features.Categories;
@@ -205,8 +206,13 @@ public class StoreController(
         {
             var cartKey = GetCartKey();
 
+            var customerId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
             var orderNumber = await _checkoutService.PlaceOrderAsync(
-                cartKey, request, cancellationToken);
+                cartKey,
+                request,
+                customerId,
+                cancellationToken);
 
             return RedirectToAction(
                 nameof(OrderConfirmation),

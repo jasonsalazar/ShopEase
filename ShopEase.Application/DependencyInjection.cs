@@ -15,6 +15,7 @@ public static class DependencyInjection
         services.AddScoped<ShoppingCartService>();
         services.AddScoped<CheckoutService>();
         services.AddScoped<OrderManagementService>();
+        services.AddScoped<CustomerOrderService>();
 
         return services;
     }

@@ -13,6 +13,7 @@ public class CheckoutService(IShopEaseDbContext db)
     public async Task<string> PlaceOrderAsync(
         string cartKey,
         CheckoutRequestDto request,
+        string? customerId = null,
         CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(cartKey))
@@ -70,7 +71,8 @@ public class CheckoutService(IShopEaseDbContext db)
             request.Phone,
             request.ShippingAddress,
             request.City,
-            request.PostalCode);
+            request.PostalCode,
+            customerId);
 
         foreach (var cartItem in cartItems)
         {
