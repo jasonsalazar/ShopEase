@@ -1,0 +1,125 @@
+@model ShopEase.Application.DTOs.OrderManagementPageDto
+
+@{
+    ViewData["Title"] = "Manage Orders";
+}
+
+<div class="container py-4">
+    <h1 class="h2 mb-4">Manage Orders</h1>
+
+    <form method="get" asp-area="Admin" asp-controller="Orders" asp-action="Index" class="row g-2 mb-4">
+        <div class="col-md-6">
+            <input name="search" value="@Model.Search" class="form-control"
+                   placeholder="Search order, customer, or email" />
+        </div>
+
+        <div class="col-md-3">
+            <select name="status" class="form-select">
+                <option value="">All statuses</option>
+                @foreach (var status in Enum.GetNames<
+                    ShopEase.Domain.Entities.OrderStatus>())
+                {
+                    <option value="@status" selected="@(Model.Status == status)">
+                        @status
+                    </option>
+                }
+            </select>
+        </div>
+
+        <div class="col-md-3 d-flex gap-2">
+            <button class="btn btn-primary" type="submit">
+                Search
+            </button>
+
+            <a asp-area="Admin" asp-controller="Orders" asp-action="Index" class="btn btn-outline-secondary">
+                Clear
+            </a>
+        </div>
+    </form>
+
+    <p class="text-muted">
+        @Model.TotalCount order(s) found.
+    </p>
+
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead>
+                <tr>
+                    <th>Order</th>
+                    <th>Customer</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                    <th class="text-end">Total</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.Items.Count == 0)
+                {
+                    <tr>
+                        <td colspan="6" class="text-center py-4">
+                            No orders found.
+                        </td>
+                    </tr>
+                }
+                else
+                {
+                    @foreach (var order in Model.Items)
+                    {
+                        <tr>
+                            <td>@order.OrderNumber</td>
+                            <td>
+                                <div>@order.CustomerName</div>
+                                <small class="text-muted">
+                                    @order.Email
+                                </small>
+                            </td>
+                            <td>@order.CreatedAt.ToLocalTime().ToString("g")</td>
+                            <td>
+                                <span class="badge bg-secondary">
+                                    @order.Status
+                                </span>
+                            </td>
+                            <td class="text-end">
+                                @order.Total.ToString("C")
+                            </td>
+                            <td class="text-end">
+                                <a asp-area="Admin" asp-controller="Orders" asp-action="Details" asp-route-id="@order.Id"
+                                   class="btn btn-sm btn-outline-primary">
+                                    View
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+
+    @if (Model.TotalPages > 1)
+    {
+        <nav aria-label="Order pages">
+            <ul class="pagination">
+                <li class="page-item @(Model.Page <= 1 ? "disabled" : "")">
+                    <a class="page-link" asp-route-search="@Model.Search" asp-route-status="@Model.Status"
+                       asp-route-page="@(Model.Page - 1)">
+                        Previous
+                    </a>
+                </li>
+
+                <li class="page-item disabled">
+                    <span class="page-link">
+                        Page @Model.Page of @Model.TotalPages
+                    </span>
+                </li>
+
+                <li class="page-item @(Model.Page >= Model.TotalPages ? "disabled" : "")">
+                    <a class="page-link" asp-route-search="@Model.Search" asp-route-status="@Model.Status"
+                       asp-route-page="@(Model.Page + 1)">
+                        Next
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    }
+</div>

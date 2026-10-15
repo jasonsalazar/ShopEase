@@ -78,4 +78,38 @@ public class Order
         _items.Add(new OrderItem(
             productId, productName, unitPrice, quantity));
     }
+
+    public void UpdateStatus(OrderStatus newStatus)
+    {
+        var isValidTransition = Status switch
+        {
+            OrderStatus.Pending =>
+                newStatus is OrderStatus.Confirmed
+                    or OrderStatus.Cancelled,
+
+            OrderStatus.Confirmed =>
+                newStatus is OrderStatus.Processing
+                    or OrderStatus.Cancelled,
+
+            OrderStatus.Processing =>
+                newStatus is OrderStatus.Shipped
+                    or OrderStatus.Cancelled,
+
+            OrderStatus.Shipped =>
+                newStatus is OrderStatus.Delivered,
+
+            OrderStatus.Delivered => false,
+            OrderStatus.Cancelled => false,
+            _ => false
+        };
+
+        if (!isValidTransition)
+        {
+            throw new InvalidOperationException(
+                $"Order status cannot change from {Status} to {newStatus}.");
+        }
+
+        Status = newStatus;
+    }
+
 }
