@@ -27,6 +27,16 @@ public class ShopEaseDbContext(
     {
         base.OnModelCreating(modelBuilder);
 
+        modelBuilder.Entity<ApplicationUser>(entity =>
+        {
+            entity.Property(user => user.CartKey)
+                .HasMaxLength(64);
+
+            entity.HasIndex(user => user.CartKey)
+                .IsUnique()
+                .HasFilter("[CartKey] IS NOT NULL");
+        });
+
         modelBuilder.Entity<Category>(entity =>
         {
             entity.ToTable("Categories");

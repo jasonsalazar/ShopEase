@@ -1,8 +1,10 @@
 using Microsoft.AspNetCore.Identity;
 using ShopEase.Application;
+using ShopEase.Application.Interfaces;
 using ShopEase.Infrastructure;
 using ShopEase.Infrastructure.Identity;
 using ShopEase.Infrastructure.Persistence;
+using ShopEase.Web.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,6 +27,8 @@ builder.Services
         options.Lockout.MaxFailedAccessAttempts = 5;
         options.Lockout.DefaultLockoutTimeSpan =
             TimeSpan.FromMinutes(15);
+
+        //options.SignIn.RequireConfirmedEmail = true;
     })
     .AddEntityFrameworkStores<ShopEaseDbContext>()
     .AddDefaultTokenProviders();
@@ -46,6 +50,8 @@ builder.Services.AddSession(options =>
     options.Cookie.IsEssential = true;
     options.Cookie.Name = ".ShopEase.Session";
 });
+
+builder.Services.AddScoped<IShopEaseEmailSender, SmtpShopEaseEmailSender>();
 
 var app = builder.Build();
 
